@@ -77,6 +77,10 @@ int main(int argc, char **argv) {
     mat = (double*)malloc(n * shift * sizeof(double));
     inverse = (double*)malloc(n * shift * sizeof(double));
 
+    for(int i = 0; i < shift * n; i++){
+        mat[i] = 0;
+        inverse[i] = 0;
+    }
     if (rank == total_size - 1){
         end_col = n;
     }
@@ -103,7 +107,9 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
 
     /* print matrix */
-    printf("Matrix: \n");
+    if(rank == 0){
+        printf("Matrix: \n");
+    }
     matrix_print(mat, n, m, 1, vec, shift, rank, total_size, row_buffer);
 
     MPI_Barrier(MPI_COMM_WORLD);

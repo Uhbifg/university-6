@@ -20,9 +20,13 @@ void matrix_print(double *array, int n, int m, int flag, int *vec, int shift, in
                 break;
             }
             if(j != n - 1){
-                printf("%10.3e ", row_buffer[j]);
+                if(rank == 0){
+                    printf("%10.3e ", row_buffer[j]);
+                }
             }else {
-                printf("%10.3e", row_buffer[j]);
+                if(rank == 0){
+                    printf("%10.3e", row_buffer[j]);
+                }
             }
         }
         printf("\n");
