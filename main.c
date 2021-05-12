@@ -128,12 +128,7 @@ printf("\n");
     MPI_Barrier(MPI_COMM_WORLD);
 
 
-    free(mat);
-    free(inverse);
-    if(rank == 0){
-        free(vec);
-        free(row_buffer);
-    }
+  
 
     #if defined DEBUG
 	for(int j = 0; j < total_size; j++){
@@ -149,7 +144,12 @@ printf("\n");
         
     #endif
 
-
+    free(mat);
+    free(inverse);
+    if(rank == 0){
+        free(vec);
+        free(row_buffer);
+    }
     MPI_Finalize();
     return 0;
 }
