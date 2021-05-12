@@ -29,7 +29,12 @@ void matrix_print(double *array, int n, int m, int flag, int *vec, int shift, in
                 }
             }
         }
+        if(rank == 0){
+            printf("\n");
+        }
+    }
+    if(rank == 0){
         printf("\n");
     }
-    printf("\n");
+    MPI_Barrier(MPI_COMM_WORLD);
 }
