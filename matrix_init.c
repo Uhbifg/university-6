@@ -64,17 +64,11 @@ int matrix_init(double *array, int n, int k, char *filename, int rank, int total
                     return -1;
                 }
             }
-            MPI_Barrier(MPI_COMM_WORLD);
-            #if defined DEBUG
-            if(rank == 0){
-                for(int k = 0; k < total_size * shift; k++){
-                    printf("%d ", row_buffer[k]);
-                }
-            }
-            #endif
             MPI_Scatter(row_buffer, shift, MPI_DOUBLE, array + i * shift, shift, MPI_DOUBLE, 0,  MPI_COMM_WORLD);
         }
-        fclose(inp);
+        if(rank == 0) {
+            fclose(inp);
+        }
     } else {
         for (int i = 0; i < n; i++) {
             for (int j = start_col; j < end_col; j++) {
