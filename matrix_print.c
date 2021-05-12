@@ -10,28 +10,44 @@ void matrix_print(double *array, int n, int m, int flag, int *vec, int shift, in
             break;
         }
         if(flag == 1){
-            MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift * total_size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        }else{
-            MPI_Gather(array + vec[i] * shift, shift, MPI_DOUBLE, row_buffer, shift * total_size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        }
+#if defined DEBUG
 
-        for(int j = 0; j < n; j++){
-            if(j == m){
-                break;
-            }
-            if(j != n - 1){
-                if(rank == 0){
-                    printf("%10.3e ", row_buffer[j]);
+            if(rank == 0){
+		printf("\n row_buff before: \n");
+		    for(int i = 0; i < total_size * shift; i++){
+		        printf("%10.3e ", row_buffer[i]);
+		    }
+		    printf("\n");
+		}
+#endif
+            MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+#if defined DEBUG
+
+            if(rank == 0){
+			printf("\n row_buff after: \n");
+		    for(int i = 0; i < total_size * shift; i++){
+		        printf("%10.3e ", row_buffer[i]);
+		    }
+		    printf("\n %i \n", shift);
+		}
+#endif
+        }else{
+            MPI_Gather(array + vec[i] * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        }
+        if(rank == 0){
+            for(int j = 0; j < n; j++){
+                if(j == m){
+                    break;
                 }
-            }else {
-                if(rank == 0){
+                if(j != n - 1){
+                    printf("%10.3e ", row_buffer[j]);
+                }else {
                     printf("%10.3e", row_buffer[j]);
                 }
             }
-        }
-        if(rank == 0){
             printf("\n");
         }
+
     }
     if(rank == 0){
         printf("\n");
