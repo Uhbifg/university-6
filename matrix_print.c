@@ -10,7 +10,7 @@ void matrix_print(double *array, int n, int m, int flag, int *vec, int shift, in
             break;
         }
         if(flag == 1){
-#if defined DEBUG
+#if defined DEBUG_print
 
             if(rank == 0){
 		printf("\n row_buff before: \n");
@@ -21,7 +21,7 @@ void matrix_print(double *array, int n, int m, int flag, int *vec, int shift, in
 		}
 #endif
             MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-#if defined DEBUG
+#if defined DEBUG_print
 
             if(rank == 0){
 			printf("\n row_buff after: \n");

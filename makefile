@@ -1,6 +1,6 @@
 CC=mpicc
 
-CFLAGS=-c -fPIC -Wall
+CFLAGS=-c -fPIC -Wall -DDEBUG
 
 
 

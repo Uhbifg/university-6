@@ -103,7 +103,20 @@ int main(int argc, char **argv) {
         free(inverse);
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
-
+	
+ #if defined DEBUG
+	for(int j = 0; j < total_size; j++){
+		if(rank == j){
+			printf("%i : \n", rank);
+		    for(int i = 0; i < n * shift; i++){
+		        printf("%10.3e ", mat[i]);
+		    }
+printf("\n");
+		    }
+		MPI_Barrier(MPI_COMM_WORLD);
+}
+        
+    #endif
     MPI_Barrier(MPI_COMM_WORLD);
 
     /* print matrix */
@@ -123,12 +136,17 @@ int main(int argc, char **argv) {
     }
 
     #if defined DEBUG
-        if(rank == 1){
-            for(int i = 0; i < n * shift; i++){
-                printf("%10.3e ", mat[j]);
-            }
-            printf("\n")
-        }
+	for(int j = 0; j < total_size; j++){
+		if(rank == j){
+			printf("%i : \n", rank);
+		    for(int i = 0; i < n * shift; i++){
+		        printf("%10.3e ", mat[i]);
+		    }
+printf("\n");
+		    }
+		MPI_Barrier(MPI_COMM_WORLD);
+}
+        
     #endif
 
 

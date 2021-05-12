@@ -70,7 +70,7 @@ int matrix_init(double *array, int n, int k, char *filename, int rank, int total
     } else {
         for (int i = 0; i < n; i++) {
             for (int j = start_col; j < end_col; j++) {
-                array[i + n * (j - start_col)] = f(k, n, i, j);
+                array[j - start_col + shift * i] = f(k, n, i, j);
             }
         }
     }
