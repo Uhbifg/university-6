@@ -6,8 +6,8 @@
 
 #include "matrix_init.h"
 #include "matrix_print.h"
-#include "matrix_inverse.h"
-#include "norm.h"
+//#include "matrix_inverse.h"
+//#include "norm.h"
 
 
 int main(int argc, char **argv) {
@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     double* mat = NULL;
     double* inverse = NULL;
     int* vec = NULL;
-    double tv1 = 0, tv2 = 0;
+    //double tv1 = 0, tv2 = 0;
     double *row_buffer = NULL;
 
     MPI_Init(&argc, &argv);
@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
             if(rank == 0){
                 printf("Invalid argument format \n");
             }
-            MPI_ABORT(MPI_COMM_WORLD, -1);
+            MPI_Abort(MPI_COMM_WORLD, 1);
         }
     } else if (argc == 5) {
         char *p1, *p2, *p3;
@@ -51,13 +51,13 @@ int main(int argc, char **argv) {
             if(rank == 0){
                 printf("Invalid argument format \n");
             }
-            MPI_ABORT(MPI_COMM_WORLD, -1);
+            MPI_Abort(MPI_COMM_WORLD, 1);
         }
     } else {
         if(rank == 0){
             printf("Invalid argument format \n");
         }
-        MPI_ABORT(MPI_COMM_WORLD, -1);
+        MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
 
@@ -65,11 +65,11 @@ int main(int argc, char **argv) {
         if(rank == 0){
             printf("Invalid argument format \n");
         }
-        MPI_ABORT(MPI_COMM_WORLD, -1);
+        MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
     /* end arguments reading */
-    int shift = (n + total_size - 1) / total_size
+    int shift = (n + total_size - 1) / total_size;
     int start_col = shift * rank;
     int end_col = start_col + shift;
 
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
         }
         free(mat);
         free(inverse);
-        MPI_ABORT(MPI_COMM_WORLD, -1);
+        MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -115,5 +115,6 @@ int main(int argc, char **argv) {
         free(vec);
         free(row_buffer);
     }
+    MPI_Finalize();
     return 0;
 }

@@ -64,7 +64,7 @@ int matrix_init(double *array, int n, int k, char *filename, int rank, int total
                     return -1;
                 }
             }
-            MPI_Scatter(row_buffer, shift, MPI_DOUBLE, array + i * shift, shift, 0,  MPI_COMM_WORLD);
+            MPI_Scatter(row_buffer, shift, MPI_DOUBLE, array + i * shift, shift, MPI_DOUBLE, 0,  MPI_COMM_WORLD);
         }
         fclose(inp);
     } else {

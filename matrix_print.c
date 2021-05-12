@@ -27,5 +27,5 @@ void matrix_print(double *array, int n, int m, int flag, int *vec, int shift, in
         }
         printf("\n");
     }
-    printf("\n")
+    printf("\n");
 }
