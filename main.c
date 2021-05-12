@@ -121,6 +121,17 @@ int main(int argc, char **argv) {
         free(vec);
         free(row_buffer);
     }
+
+    #if defined DEBUG
+        if(rank == 1){
+            for(int i = 0; i < n * shift; i++){
+                printf("%10.3e ", mat[j]);
+            }
+            printf("\n")
+        }
+    #endif
+
+
     MPI_Finalize();
     return 0;
 }
