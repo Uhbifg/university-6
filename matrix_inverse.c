@@ -51,19 +51,23 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
 #endif
 
         for(int j = 0; j < n; j++){
-            if(rank == proc){
-                temp_el = array[i % shift + shift * j];
+if(j != i){
+if(rank == proc){
+                temp_el = array[j % n + shift * i];
                 printf("%f \n", temp_el);
             }
-
+}
             MPI_Bcast(&temp_el, 1, MPI_DOUBLE, proc, MPI_COMM_WORLD);
             MPI_Barrier(MPI_COMM_WORLD);
             for(int k = 0; k < shift; k++){
-                if(j != i){
+                
+
+
+
                     array[k + shift * j] -= temp_el * array[k + shift * i];
                 }
             }
-        }
+        
 
 
 
