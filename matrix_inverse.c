@@ -2,7 +2,7 @@
 #include <math.h>
 #include <mpi.h>
 #include <stdio.h>
-#include "matrix_print.h>
+#include "matrix_print.h"
 /* get process num by column */
 int col2process(int col, int shift, int n){
     int process = -1;
@@ -15,23 +15,25 @@ int col2process(int col, int shift, int n){
 
 int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, int rank, int total_size, double *row_buffer) {
     double eps = 0.00000001;
-    int max_col = 0;
+    //int max_col = 0;
     double max_element = 0;
     for(int i = 0; i < n; i++){
+MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         /* move i'th row to row_buffer */
         if(rank == 0){
-            MPI_Scatter(row_buffer, shift, MPI_DOUBLE, array + i * shift, shift, MPI_DOUBLE, 0,  MPI_COMM_WORLD);
             for(int j = 0; j < n; j++){
                 if(row_buffer[j] > max_element){
-                    max_col = j;
+                    //max_col = j;
                     max_element = row_buffer[j];
 
                 }
+printf("%f ", row_buffer[j]);
             }
-            if(fabs(row_buffer[max_col]) < eps){
+            if(fabs(max_element) < eps){
                 printf("matrix has det 0, sorry");
                 return -1;
             }
+	
         }
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -53,7 +55,7 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
             printf("step: %i \n matrix: \n", i);
         }
 
-        matrix_print(mat, n, m, 1, vec, shift, rank, total_size, row_buffer);
+        matrix_print(array, n, n, 1, vec, shift, rank, total_size, row_buffer);
         MPI_Barrier(MPI_COMM_WORLD);
 #endif
     }

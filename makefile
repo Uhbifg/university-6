@@ -1,6 +1,6 @@
 CC=mpicc
 
-CFLAGS=-c -fPIC -Wall
+CFLAGS=-c -fPIC -Wall -DDEBUG
 
 
 
@@ -34,6 +34,6 @@ matrix_norm.o: norm.c
 	$(CC) $(CFLAGS) norm.c
 
 matrix_inverse.o: matrix_inverse.c
-	$(CC) $(CFLAGS) matrix_inverse.c
+	$(CC) $(CFLAGS) matrix_print.h matrix_print.c matrix_inverse.c
 clean:
 	rm -rf *.o
