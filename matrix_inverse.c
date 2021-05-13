@@ -45,10 +45,11 @@ printf("%f ", row_buffer[j]);
                 }
             }
         }
-
+/*
         for(int k = 0; k < shift; k++){
             array[k + shift * i] /= max_element;
         }
+*/
         MPI_Barrier(MPI_COMM_WORLD);
 #if defined DEBUG
         if(rank == 0){
