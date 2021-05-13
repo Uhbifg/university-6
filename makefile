@@ -8,9 +8,9 @@ all: a clean
 
 
 
-a: main.o matrix_print.o matrix_init.o 
+a: main.o matrix_print.o matrix_init.o matrix_inverse.o norm.o 
 
-	$(CC) main.o matrix_init.o matrix_print.o -o a -lm
+	$(CC) main.o matrix_init.o matrix_print.o matrix_inverse.o norm.o  -o a -lm
 
 
 
@@ -30,8 +30,10 @@ matrix_init.o: matrix_init.c
 
 	$(CC) $(CFLAGS) matrix_init.c
 
+matrix_norm.o: norm.c
+	$(CC) $(CFLAGS) norm.c
 
-
-
+matrix_inverse.o: matrix_inverse.c
+	$(CC) $(CFLAGS) matrix_inverse.c
 clean:
 	rm -rf *.o

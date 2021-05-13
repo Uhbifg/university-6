@@ -1,5 +1,6 @@
 #include "norm.h"
 #include <math.h>
+#include <mpi.h>
 
 
 double norm(double *array, double *inverse, int n, int *vec, int shift, int rank, int total_size, double *row_buffer){

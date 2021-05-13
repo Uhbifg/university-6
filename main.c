@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 
     tv1 = MPI_Wtime();
     /* matrix inverse */
-    if(matrix_inverse(mat, n, inverse, vec) != 0){
+    if(matrix_inverse(mat, n, inverse, vec, shift, rank, total_size, row_buffer) != 0){
         free(mat);
         free(inverse);
         if(rank == 0){
@@ -129,17 +129,8 @@ int main(int argc, char **argv) {
 
     tv2 = MPI_Wtime();
     MPI_Barrier(MPI_COMM_WORLD);
-
-    if(matrix_init(mat, n, k, filename, rank, total_size, start_col, end_col, row_buffer, shift) != 0){
-        if(rank == 0){
-            printf("Matrix init error. \n");
-            free(vec);
-            free(row_buffer);
-        }
-        free(mat);
-        free(inverse);
-        MPI_Abort(MPI_COMM_WORLD, 1);
-    }
+	
+    
     MPI_Barrier(MPI_COMM_WORLD);
 
     if(rank == 0){
@@ -148,7 +139,7 @@ int main(int argc, char **argv) {
 
     MPI_Barrier(MPI_COMM_WORLD);
     matrix_print(inverse, n, m, 0, vec, shift, rank, total_size, row_buffer);
-    double residual = norm(mat, inverse, n, vec);
+    double residual = norm(mat, inverse, n,vec, shift,rank, total_size, row_buffer);
     if(rank == 0){
         printf("\n Time taken to find the inverse matrix: %f \n", tv2 - tv1);
         printf("\n Residual (2 norm): %10.3e \n", residual);

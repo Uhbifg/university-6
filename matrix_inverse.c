@@ -1,11 +1,10 @@
 #include "matrix_inverse.h"
-#include <stdio.h>
-#include <stdlib.h>  // for strtol
+#include <math.h>
 #include <mpi.h>
-
+#include <stdio.h>
 /* get process num by column */
 int col2process(int col, int shift, int n){
-    process = -1;
+    int process = -1;
     while(col > 0){
         col -= shift;
         process += 1;
@@ -31,7 +30,7 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
                     }
                 }
             }
-            MPI_Bcast(&max_element, 1, MPI_DOUBLE, proc_num, MPI_COMM_WORLD);
+            MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
         MPI_Barrier(MPI_COMM_WORLD);
 
