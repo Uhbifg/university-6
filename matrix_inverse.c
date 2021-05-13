@@ -21,19 +21,20 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         if(rank == 0){
             MPI_Scatter(row_buffer, shift, MPI_DOUBLE, array + i * shift, shift, MPI_DOUBLE, 0,  MPI_COMM_WORLD);
             for(int j = 0; j < n; j++){
-                if(row_buffer[j] > row_buffer[max_col]){
+                if(row_buffer[j] > max_element){
                     max_col = j;
-                    max_element = row_buffer[max_col];
-                    if(fabs(max_element) < eps){
+		    max_element = row_buffer[j];
+                    
+                }
+            }
+		if(fabs(row_buffer[max_col]) < eps){
                         printf("matrix has det 0, sorry");
                         return -1;
                     }
-                }
-            }
-            MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
         MPI_Barrier(MPI_COMM_WORLD);
-
+	MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	printf("max_el %f", max_element);
         for(int j = 0; j < n; j++){
             for(int k = 0; k < shift; k++){
                 if(j != i){
@@ -45,6 +46,7 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         for(int k = 0; k < shift; k++){
             array[k + shift * i] /= max_element;
         }
+MPI_Barrier(MPI_COMM_WORLD);
     }
     return 0;
 }

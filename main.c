@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
-    matrix_print(inverse, n, m, 0, vec, shift, rank, total_size, row_buffer);
+    matrix_print(mat, n, m, 1, vec, shift, rank, total_size, row_buffer);
     double residual = norm(mat, inverse, n,vec, shift,rank, total_size, row_buffer);
     if(rank == 0){
         printf("\n Time taken to find the inverse matrix: %f \n", tv2 - tv1);
