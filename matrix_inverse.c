@@ -37,31 +37,9 @@ MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         max_col = col2process(max_col, shift, n);
-        for(int j = 0; j < n; j++){
-            for(int k = 0; k < shift; k++){
-                if(j != i){
-                    array[k + shift * j] -= array[k + shift * i] / max_element;
-                }
-            }
-        }
-        for(int k = 0; k < shift; k++){
-            if(rank == proc){
-                temp_el = array[k + shift * i];
-            }
-            MPI_Barrier(MPI_COMM_WORLD);
-            MPI_Bcast(&temp_el, 1, MPI_DOUBLE, proc, MPI_COMM_WORLD);
-            for(int j = 0; j < n; j++){
-                if(j != i){
-                    array[k + shift * j] -= temp_el * array[k + shift * i] / max_element;
-                }
-            }
-        }
-
-        for(int k = 0; k < shift; k++){
+for(int k = 0; k < shift; k++){
             array[k + shift * i] /= max_element;
         }
-
-        MPI_Barrier(MPI_COMM_WORLD);
 #if defined DEBUG
         if(rank == 0){
             printf("step: %i \n matrix: \n", i);
@@ -70,6 +48,25 @@ MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 
         matrix_print(array, n, n, 1, vec, shift, rank, total_size, row_buffer);
         MPI_Barrier(MPI_COMM_WORLD);
 #endif
+        for(int k = 0; k < shift; k++){
+            if(rank == proc){
+                temp_el = array[k + shift * i];
+		printf("%f \n", temp_el);
+            }
+
+MPI_Bcast(&temp_el, 1, MPI_DOUBLE, proc, MPI_COMM_WORLD);
+            MPI_Barrier(MPI_COMM_WORLD); 
+            for(int j = 0; j < n; j++){
+                if(j != i){
+                    array[k + shift * j] -= temp_el * array[k + shift * i];
+                }
+            }
+        }
+
+        
+
+        MPI_Barrier(MPI_COMM_WORLD);
+
     }
     return 0;
 }
