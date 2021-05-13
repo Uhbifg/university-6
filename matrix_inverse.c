@@ -20,7 +20,7 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
     int proc = 0;
     double  temp_el = 0;
     for(int i = 0; i < n; i++){
-MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         /* move i'th row to row_buffer */
         if(rank == 0){
             for(int j = 0; j < n; j++){
@@ -37,9 +37,10 @@ MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         max_col = col2process(max_col, shift, n);
-for(int k = 0; k < shift; k++){
+        for(int k = 0; k < shift; k++){
             array[k + shift * i] /= max_element;
         }
+
 #if defined DEBUG
         if(rank == 0){
             printf("step: %i \n matrix: \n", i);
@@ -48,22 +49,23 @@ for(int k = 0; k < shift; k++){
         matrix_print(array, n, n, 1, vec, shift, rank, total_size, row_buffer);
         MPI_Barrier(MPI_COMM_WORLD);
 #endif
-        for(int k = 0; k < shift; k++){
+
+        for(int j = 0; j < n; j++){
             if(rank == proc){
-                temp_el = array[k + shift * i];
-		printf("%f \n", temp_el);
+                temp_el = array[i % shift + shift * j];
+                printf("%f \n", temp_el);
             }
 
-MPI_Bcast(&temp_el, 1, MPI_DOUBLE, proc, MPI_COMM_WORLD);
-            MPI_Barrier(MPI_COMM_WORLD); 
-            for(int j = 0; j < n; j++){
+            MPI_Bcast(&temp_el, 1, MPI_DOUBLE, proc, MPI_COMM_WORLD);
+            MPI_Barrier(MPI_COMM_WORLD);
+            for(int k = 0; k < shift; k++){
                 if(j != i){
                     array[k + shift * j] -= temp_el * array[k + shift * i];
                 }
             }
         }
 
-        
+
 
         MPI_Barrier(MPI_COMM_WORLD);
 
