@@ -16,13 +16,14 @@ int col2process(int col, int shift, int n){
 int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, int rank, int total_size, double *row_buffer) {
     double eps = 0.00000001;
     int max_col = 0;
-    double max_element = array[0];
+    double max_element = 0;
     int proc = 0;
     double  temp_el = 0;
     for(int i = 0; i < n; i++){
         MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         /* move i'th row to row_buffer */
         if(rank == 0){
+max_element = array[0 + shift*i];
             for(int j = 0; j < n; j++){
                 if(row_buffer[j] > max_element){
                     max_col = j;
@@ -37,9 +38,7 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         max_col = col2process(max_col, shift, n);
-        for(int k = 0; k < shift; k++){
-            array[k + shift * i] /= max_element;
-        }
+
 
 #if defined DEBUG
         if(rank == 0){
@@ -50,21 +49,23 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         MPI_Barrier(MPI_COMM_WORLD);
 #endif
 
-        for(int j = 0; j < n; j++) {
-            if (j != i) {
+        for(int k = 0; k < shift; k++) {
+            
                 if (rank == proc) {
-                    temp_el = array[i % n + shift * j];
+                    temp_el = array[k + shift * i];
                     printf("%f \n", temp_el);
                 }
                 MPI_Barrier(MPI_COMM_WORLD);
                 MPI_Bcast(&temp_el, 1, MPI_DOUBLE, proc, MPI_COMM_WORLD);
                 MPI_Barrier(MPI_COMM_WORLD);
-                for (int k = 0; k < shift; k++) {
-
-
-                    array[k + shift * j] -= temp_el * array[k + shift * i];
+                for (int j = 0; j < n; j++) {
+if (j != i) {
+                    array[k + shift * j] -= temp_el * array[k + shift * i] / max_element;
                 }
             }
+        }
+        for(int k = 0; k < shift; k++){
+            array[k + shift * i] /= max_element;
         }
         MPI_Barrier(MPI_COMM_WORLD);
     }
