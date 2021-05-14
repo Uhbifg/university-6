@@ -49,17 +49,15 @@ max_element = array[0 + shift*i];
         MPI_Barrier(MPI_COMM_WORLD);
 #endif
 
-        for(int k = 0; k < shift; k++) {
-            
+        for(int j = 0; j < n; j++) {
+            if (j != i) {
                 if (rank == proc) {
-                    temp_el = array[k + shift * i];
+                    temp_el = array[j % shift + shift * i];
                     printf("%f \n", temp_el);
                 }
-                MPI_Barrier(MPI_COMM_WORLD);
                 MPI_Bcast(&temp_el, 1, MPI_DOUBLE, proc, MPI_COMM_WORLD);
-                MPI_Barrier(MPI_COMM_WORLD);
-                for (int j = 0; j < n; j++) {
-if (j != i) {
+                for (int k = 0; k < shift; k++) {
+
                     array[k + shift * j] -= temp_el * array[k + shift * i] / max_element;
                 }
             }
