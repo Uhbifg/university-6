@@ -40,7 +40,6 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         int max_col = 0;
         double max_element = 0;
         int proc = 0;
-        int temp = 0;
         MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         /* move i'th row to row_buffer */
         if(rank == 0){
@@ -55,9 +54,6 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
                 printf("matrix has det 0, sorry");
                 return -1;
             }
-            temp = vec[i];
-            vec[i] = vec[max_col];
-            vec[max_col] = temp;
         }
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -86,7 +82,10 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         MPI_Barrier(MPI_COMM_WORLD);
     }
 #if defined DEBUG
-    printf("end matrix inverse \n");
+if(rank == 0){
+    printf("end matrix: \n");
+}
+matrix_print(array, n, n, 1, vec, shift, rank, total_size, row_buffer);
 #endif
 
     return 0;
