@@ -13,7 +13,7 @@ int col2process(int col, int shift, int n){
     return process;
 }
 
-int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, int rank, int total_size, double *row_buffer) {
+int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, int rank, int total_size, double *row_buffer, double *column_buffer) {
     double eps = 0.00000001;
     int max_col = 0;
     double max_element = 0;
