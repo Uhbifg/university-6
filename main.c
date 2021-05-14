@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     /* create matrix */
     mat = (double*)malloc(n * shift * sizeof(double));
     inverse = (double*)malloc(n * shift * sizeof(double));
-    column_buffer = (double*)malloc(n * sizeof(double));
+    column_buffer = (double*)malloc(n * shift * sizeof(double));
     for(int i = 0; i < shift * n; i++){
         mat[i] = 0;
         inverse[i] = 0;
@@ -85,8 +85,9 @@ int main(int argc, char **argv) {
         end_col = n;
     }
 
+
     if(rank == 0){
-        vec = (int*)malloc(2 * n * sizeof(int));
+        vec = (int*)malloc(n * sizeof(int));
         row_buffer = (double*)malloc(shift * total_size * sizeof(double));
         for(int i = 0; i < shift * total_size; i++){
             row_buffer[i] = 0;
@@ -138,9 +139,8 @@ int main(int argc, char **argv) {
         printf("Inverse matrix: \n");
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);
-    matrix_print(mat, n, m, 1, vec, shift, rank, total_size, row_buffer);
-    double residual = norm(mat, inverse, n,vec, shift,rank, total_size, row_buffer);
+    matrix_print(inverse, n, m, 0, vec, shift, rank, total_size, row_buffer);
+    double residual = norm(mat, inverse, n,vec, shift,rank, total_size, row_buffer, column_buffer);
     if(rank == 0){
         printf("\n Time taken to find the inverse matrix: %f \n", tv2 - tv1);
         printf("\n Residual (2 norm): %10.3e \n", residual);
