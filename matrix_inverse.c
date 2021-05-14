@@ -18,8 +18,12 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
     int a = 0, ba = 0;
     int temp_col = 0;
     if(rank == 0){
-        for(int i = 0; i < n; i++){
+        for(int i = 0; i < 2*n; i++){
+		if(i < n){
             vec[i] = i;
+}else{
+vec[i] = i - n;
+}
         }
     }
     /* inverse init */
@@ -43,7 +47,6 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         int max_col = 0;
         double max_element = 0;
         int proc = 0;
-        int temp = 0;
         MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         /* move i'th row to row_buffer */
         if(rank == 0){
@@ -74,7 +77,6 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         MPI_Bcast(&max_col, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Bcast(vec, n, MPI_INT, 0, MPI_COMM_WORLD);
         proc = col2process(max_col, shift);
         if(rank == proc){
             for(int j = 0; j < n; j++){
@@ -98,8 +100,12 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         MPI_Barrier(MPI_COMM_WORLD);
     }
 #if defined DEBUG
-    printf("end matrix inverse \n");
+if(rank == 0){
+printf("raw ans matrix: \n");
+}
+matrix_print(array, n, n, 0, vec, shift, rank, total_size, row_buffer);
+MPI_Barrier(MPI_COMM_WORLD);
 #endif
-
+ 
     return 0;
 }

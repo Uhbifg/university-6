@@ -12,7 +12,7 @@ void matrix_print(double *array, int n, int m, int flag, int *vec, int shift, in
         if(flag == 1){
             MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }else{
-            MPI_Gather(array + vec[i] * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+            MPI_Gather(array + vec[n + i] * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
         if(rank == 0){
             for(int j = 0; j < n; j++){

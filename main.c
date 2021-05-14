@@ -135,9 +135,7 @@ int main(int argc, char **argv) {
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-    if(rank == 0){
-        printf("Inverse matrix: \n");
-    }
+    
     if(matrix_init(mat, n, k, filename, rank, total_size, start_col, end_col, row_buffer, shift) != 0){
         if(rank == 0){
             printf("Matrix init error. \n");
@@ -158,13 +156,23 @@ printf("%d ", vec[i]);
 printf("\n");
 }
 #endif
-    matrix_print(inverse, n, m, 1, vec, shift, rank, total_size, row_buffer);
+if(rank == 0){
+        printf("Inverse matrix: \n");
+    }
+        MPI_Bcast(vec, 2*n, MPI_INT, 0, MPI_COMM_WORLD);
+    matrix_print(inverse, n, m, 0, vec, shift, rank, total_size, row_buffer);
     double residual = norm(mat, inverse, n,vec, shift,rank, total_size, row_buffer, column_buffer);
     if(rank == 0){
         printf("\n Time taken to find the inverse matrix: %f \n", tv2 - tv1);
         printf("\n Residual (2 norm): %10.3e \n", residual);
     }
 
+#if defined DEBUG
+if(rank == 0){
+printf("raw inv matrix: \n");
+}
+matrix_print(inverse, n, m, 0, vec, shift, rank, total_size, row_buffer);
+#endif
 #if defined DEBUG
 #endif
 
