@@ -32,10 +32,11 @@ double f(int k, int n, int i, int j) {
 }
 
 
-int matrix_init(double *array, int n, int k, char *filename, int rank, int total_size, int start_col, int end_col, double *row_buffer, int shift) {
+int matrix_init(double *array, int n, int k, char *filename, int rank, int total_size, int start_col, int end_col,
+                double *row_buffer, int shift) {
     FILE *inp;
     if (k == 0) {
-        if(rank == 0){
+        if (rank == 0) {
             inp = fopen(filename, "r");
             if (inp == NULL) {
                 printf("Cannot open file.\n");
@@ -43,7 +44,7 @@ int matrix_init(double *array, int n, int k, char *filename, int rank, int total
             }
         }
         for (int i = 0; i < n; i++) {
-            if(rank == 0) {
+            if (rank == 0) {
                 for (int j = 0; j < n; j++) {
                     if (fscanf(inp, "%lf,", &row_buffer[j]) != 1) {
                         printf("File read error. \n");
@@ -64,9 +65,9 @@ int matrix_init(double *array, int n, int k, char *filename, int rank, int total
                     return -1;
                 }
             }
-            MPI_Scatter(row_buffer, shift, MPI_DOUBLE, array + i * shift, shift, MPI_DOUBLE, 0,  MPI_COMM_WORLD);
+            MPI_Scatter(row_buffer, shift, MPI_DOUBLE, array + i * shift, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         }
-        if(rank == 0) {
+        if (rank == 0) {
             fclose(inp);
         }
     } else {
