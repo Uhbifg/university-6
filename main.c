@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     mat = (double*)malloc(n * shift * sizeof(double));
     inverse = (double*)malloc(n * shift * sizeof(double));
     column_buffer = (double*)malloc(n * shift * sizeof(double));
-vec = (int*)malloc(n * sizeof(int));
+    vec = (int*)malloc(2 * n * sizeof(int));
     for(int i = 0; i < shift * n; i++){
         mat[i] = 0;
         inverse[i] = 0;
@@ -131,14 +131,14 @@ vec = (int*)malloc(n * sizeof(int));
 
     tv2 = MPI_Wtime();
     MPI_Barrier(MPI_COMM_WORLD);
-	
+
 
     MPI_Barrier(MPI_COMM_WORLD);
 
     if(rank == 0){
         printf("Inverse matrix: \n");
     }
-if(matrix_init(mat, n, k, filename, rank, total_size, start_col, end_col, row_buffer, shift) != 0){
+    if(matrix_init(mat, n, k, filename, rank, total_size, start_col, end_col, row_buffer, shift) != 0){
         if(rank == 0){
             printf("Matrix init error. \n");
             free(vec);
@@ -150,7 +150,7 @@ if(matrix_init(mat, n, k, filename, rank, total_size, start_col, end_col, row_bu
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 #if defined DEBUG
-if(rank == 0){
+    if(rank == 0){
     printf("vec :  \n");
 for(int i = 0; i < n; i++){
 printf("%d ", vec[i]);
@@ -166,7 +166,7 @@ printf("\n");
     }
 
 #if defined DEBUG
-    #endif
+#endif
 
     free(mat);
     free(inverse);

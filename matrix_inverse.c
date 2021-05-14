@@ -15,6 +15,8 @@ int col2process(int col, int shift){
 
 int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, int rank, int total_size, double *row_buffer, double *column_buffer) {
     double eps = 0.00000001;
+    int a = 0, ba = 0;
+    int temp_col = 0;
     if(rank == 0){
         for(int i = 0; i < n; i++){
             vec[i] = i;
@@ -37,6 +39,7 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
 #endif
 
     for(int i = 0; i < n; i++){
+        temp_col = vec[i];
         int max_col = 0;
         double max_element = 0;
         int proc = 0;
@@ -49,20 +52,29 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
                 if(row_buffer[j] > max_element){
                     max_col = j;
                     max_element = row_buffer[j];
+                    a = 1;
+                    ba = j;
+                    temp_col = vec[j];
                 }
             }
+            if(a == 1){
+                a = 0;
+                int b = vec[i];
+                vec[i] = temp_col;
+                vec[ba] = b;
+                vec[n + temp_col] = i;
+                vec[n + b] = ba;
+            }
+
             if(fabs(max_element) < eps){
                 printf("matrix has det 0, sorry");
                 return -1;
             }
-            temp = vec[i];
-            vec[i] = vec[max_col];
-            vec[max_col] = temp;
         }
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         MPI_Bcast(&max_col, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	MPI_Bcast(vec, n, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Bcast(vec, n, MPI_INT, 0, MPI_COMM_WORLD);
         proc = col2process(max_col, shift);
         if(rank == proc){
             for(int j = 0; j < n; j++){
