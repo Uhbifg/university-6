@@ -6,7 +6,7 @@
 /* get process num by column */
 int col2process(int col, int shift, int n){
     int process = -1;
-    while(col > 0){
+    while(col >= 0){
         col -= shift;
         process += 1;
     }
@@ -37,7 +37,6 @@ max_element = array[0 + shift*i];
         }
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        max_col = col2process(max_col, shift, n);
 
 
 #if defined DEBUG
@@ -51,6 +50,8 @@ max_element = array[0 + shift*i];
 
         for(int j = 0; j < n; j++) {
             if (j != i) {
+        proc = col2process(max_col, shift, n);
+	printf("proc: %d \n", proc);
                 if (rank == proc) {
                     temp_el = array[j % shift + shift * i];
                     printf("%f \n", temp_el);
@@ -61,6 +62,7 @@ max_element = array[0 + shift*i];
                     array[k + shift * j] -= temp_el * array[k + shift * i] / max_element;
                 }
             }
+MPI_Barrier(MPI_COMM_WORLD);
         }
         for(int k = 0; k < shift; k++){
             array[k + shift * i] /= max_element;

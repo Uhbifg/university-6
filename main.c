@@ -113,7 +113,6 @@ int main(int argc, char **argv) {
     matrix_print(mat, n, m, 1, vec, shift, rank, total_size, row_buffer);
 
     MPI_Barrier(MPI_COMM_WORLD);
-
     tv1 = MPI_Wtime();
     /* matrix inverse */
     if(matrix_inverse(mat, n, inverse, vec, shift, rank, total_size, row_buffer) != 0){
@@ -130,7 +129,7 @@ int main(int argc, char **argv) {
     tv2 = MPI_Wtime();
     MPI_Barrier(MPI_COMM_WORLD);
 	
-    
+
     MPI_Barrier(MPI_COMM_WORLD);
 
     if(rank == 0){
