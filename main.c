@@ -77,6 +77,7 @@ int main(int argc, char **argv) {
     mat = (double*)malloc(n * shift * sizeof(double));
     inverse = (double*)malloc(n * shift * sizeof(double));
     column_buffer = (double*)malloc(n * shift * sizeof(double));
+vec = (int*)malloc(n * sizeof(int));
     for(int i = 0; i < shift * n; i++){
         mat[i] = 0;
         inverse[i] = 0;
@@ -87,7 +88,6 @@ int main(int argc, char **argv) {
 
 
     if(rank == 0){
-        vec = (int*)malloc(n * sizeof(int));
         row_buffer = (double*)malloc(shift * total_size * sizeof(double));
         for(int i = 0; i < shift * total_size; i++){
             row_buffer[i] = 0;
@@ -138,8 +138,27 @@ int main(int argc, char **argv) {
     if(rank == 0){
         printf("Inverse matrix: \n");
     }
-
-    matrix_print(inverse, n, m, 0, vec, shift, rank, total_size, row_buffer);
+if(matrix_init(mat, n, k, filename, rank, total_size, start_col, end_col, row_buffer, shift) != 0){
+        if(rank == 0){
+            printf("Matrix init error. \n");
+            free(vec);
+            free(row_buffer);
+        }
+        free(mat);
+        free(inverse);
+        free(column_buffer);
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
+#if defined DEBUG
+if(rank == 0){
+    printf("vec :  \n");
+for(int i = 0; i < n; i++){
+printf("%d ", vec[i]);
+}
+printf("\n");
+}
+#endif
+    matrix_print(inverse, n, m, 1, vec, shift, rank, total_size, row_buffer);
     double residual = norm(mat, inverse, n,vec, shift,rank, total_size, row_buffer, column_buffer);
     if(rank == 0){
         printf("\n Time taken to find the inverse matrix: %f \n", tv2 - tv1);

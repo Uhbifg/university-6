@@ -56,12 +56,13 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
                 return -1;
             }
             temp = vec[i];
-            vec[i] = max_col;
+            vec[i] = vec[max_col];
             vec[max_col] = temp;
         }
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         MPI_Bcast(&max_col, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Bcast(vec, n, MPI_INT, 0, MPI_COMM_WORLD);
         proc = col2process(max_col, shift);
         if(rank == proc){
             for(int j = 0; j < n; j++){
@@ -84,5 +85,9 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         }
         MPI_Barrier(MPI_COMM_WORLD);
     }
+#if defined DEBUG
+    printf("end matrix inverse \n");
+#endif
+
     return 0;
 }
