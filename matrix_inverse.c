@@ -6,7 +6,7 @@
 /* get process num by column */
 int col2process(int col, int shift, int n){
     int process = -1;
-    while(col > 0){
+    while(col >= 0){
         col -= shift;
         process += 1;
     }
@@ -23,7 +23,7 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         MPI_Gather(array + i * shift, shift, MPI_DOUBLE, row_buffer, shift, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         /* move i'th row to row_buffer */
         if(rank == 0){
-max_element = array[0 + shift*i];
+            max_element = array[0 + shift*i];
             for(int j = 0; j < n; j++){
                 if(row_buffer[j] > max_element){
                     max_col = j;
@@ -37,7 +37,6 @@ max_element = array[0 + shift*i];
         }
         MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&max_element, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        max_col = col2process(max_col, shift, n);
 
 
 #if defined DEBUG
@@ -48,21 +47,17 @@ max_element = array[0 + shift*i];
         matrix_print(array, n, n, 1, vec, shift, rank, total_size, row_buffer);
         MPI_Barrier(MPI_COMM_WORLD);
 #endif
-
-        for(int j = 0; j < n; j++) {
-            if (j != i) {
-                if (rank == proc) {
-                    temp_el = array[k + shift * i];
-                    printf("%f \n", temp_el);
-                }
-                MPI_Barrier(MPI_COMM_WORLD);
-                MPI_Bcast(&temp_el, 1, MPI_DOUBLE, proc, MPI_COMM_WORLD);
-                MPI_Barrier(MPI_COMM_WORLD);
-                for (int k = 0; k < shift; k++) {
-
-                    array[k + shift * j] -= temp_el * array[k + shift * i] / max_element;
-                }
+        proc = col2process(max_col, shift, n);
+        if(rank == proc){
+            for(int j = 0; j < n; j++){
+                column_buffer[j] = array[i % shift + j * shift];
             }
+        }
+        MPI_Bcast(column_buffer, n, MPI_DOUBLE, proc, MPI_COMM_WORLD);
+        for(int j = i + 1; j < n; j++){
+                for (int k = 0; k < shift; k++) {
+                    array[k + shift * j] -=  column_buffer[j] * array[k + shift * i] / max_element;
+                }
         }
         for(int k = 0; k < shift; k++){
             array[k + shift * i] /= max_element;

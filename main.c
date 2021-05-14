@@ -130,6 +130,10 @@ int main(int argc, char **argv) {
 
     tv2 = MPI_Wtime();
     MPI_Barrier(MPI_COMM_WORLD);
+	
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
     if(rank == 0){
         printf("Inverse matrix: \n");
     }
