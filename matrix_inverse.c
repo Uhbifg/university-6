@@ -13,7 +13,7 @@ int col2process(int col, int shift, int n){
     return process;
 }
 
-int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, int rank, int total_size, double *row_buffer, double *column_buffer) {
+int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, int rank, int total_size, double *row_buffer, double *row_buffer) {
     double eps = 0.00000001;
     int max_col = 0;
     double max_element = 0;
@@ -48,16 +48,17 @@ int matrix_inverse(double *array, int n, double *inverse, int *vec, int shift, i
         MPI_Barrier(MPI_COMM_WORLD);
 #endif
         proc = col2process(max_col, shift, n);
-        if(rank == proc){
-            for(int j = 0; j < n; j++){
-                column_buffer[j] = array[i % shift + j * shift];
-            }
-        }
-        MPI_Bcast(column_buffer, n, MPI_DOUBLE, proc, MPI_COMM_WORLD);
-        for(int j = i + 1; j < n; j++){
-                for (int k = 0; k < shift; k++) {
-                    array[k + shift * j] -=  column_buffer[j] * array[k + shift * i] / max_element;
+        for(int j = i + 1; j < n; j++) {
+                if (rank == proc) {
+                    temp_el = array[j % shift + shift * i];
+                    printf("%f \n", temp_el);
                 }
+                MPI_Bcast(&temp_el, 1, MPI_DOUBLE, proc, MPI_COMM_WORLD);
+                for (int k = 0; k < shift; k++) {
+
+                    array[k + shift * j] -= temp_el * array[k + shift * i] / max_element;
+                }
+            MPI_Barrier(MPI_COMM_WORLD);
         }
         for(int k = 0; k < shift; k++){
             array[k + shift * i] /= max_element;
