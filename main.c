@@ -96,14 +96,14 @@ int main(int argc, char **argv) {
     }
 
     if(matrix_init(mat, n, k, filename, rank, total_size, start_col, end_col, row_buffer, shift) != 0){
-        if(rank == 0){
-            printf("Matrix init error. \n");
-            free(vec);
-            free(row_buffer);
-        }
         free(mat);
         free(inverse);
         free(column_buffer);
+        free(vec);
+        if(rank == 0){
+            printf("problem with inverse\n");
+            free(row_buffer);
+        }
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
@@ -122,9 +122,9 @@ int main(int argc, char **argv) {
         free(mat);
         free(inverse);
         free(column_buffer);
+        free(vec);
         if(rank == 0){
             printf("problem with inverse\n");
-            free(vec);
             free(row_buffer);
         }
         MPI_Abort(MPI_COMM_WORLD, 1);
@@ -136,15 +136,14 @@ int main(int argc, char **argv) {
 
 
     if(matrix_init(mat, n, k, filename, rank, total_size, start_col, end_col, row_buffer, shift) != 0){
-        if(rank == 0){
-            printf("Matrix init error. \n");
-
-            free(row_buffer);
-        }
-        free(vec);
         free(mat);
         free(inverse);
         free(column_buffer);
+        free(vec);
+        if(rank == 0){
+            printf("problem with inverse\n");
+            free(row_buffer);
+        }
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
