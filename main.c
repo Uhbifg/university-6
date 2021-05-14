@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     int* vec = NULL;
     double tv1 = 0, tv2 = 0;
     double *row_buffer = NULL;
-
+    double *column_buffer = NULL;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &total_size);
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     /* create matrix */
     mat = (double*)malloc(n * shift * sizeof(double));
     inverse = (double*)malloc(n * shift * sizeof(double));
-
+    column_buffer = (double*)malloc(n * sizeof(double));
     for(int i = 0; i < shift * n; i++){
         mat[i] = 0;
         inverse[i] = 0;
@@ -101,6 +101,7 @@ int main(int argc, char **argv) {
         }
         free(mat);
         free(inverse);
+        free(column_buffer);
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
@@ -115,9 +116,10 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     tv1 = MPI_Wtime();
     /* matrix inverse */
-    if(matrix_inverse(mat, n, inverse, vec, shift, rank, total_size, row_buffer) != 0){
+    if(matrix_inverse(mat, n, inverse, vec, shift, rank, total_size, row_buffer, column_buffer) != 0){
         free(mat);
         free(inverse);
+        free(column_buffer);
         if(rank == 0){
             printf("problem with inverse\n");
             free(vec);
@@ -149,6 +151,7 @@ int main(int argc, char **argv) {
 
     free(mat);
     free(inverse);
+    free(column_buffer);
     if(rank == 0){
         free(vec);
         free(row_buffer);
