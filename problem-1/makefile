@@ -16,7 +16,7 @@ a: main.o matrix_print.o matrix_init.o matrix_inverse.o norm.o
 
 main.o: main.c
 
-	$(CC) $(CFLAGS) main.c
+	$(CC) $(CFLAGS) main.c matrix_init.h matrix_print.h
 
 
 
@@ -34,6 +34,6 @@ matrix_norm.o: norm.c
 	$(CC) $(CFLAGS) norm.c
 
 matrix_inverse.o: matrix_inverse.c
-	$(CC) $(CFLAGS) matrix_print.h matrix_print.c matrix_inverse.c
+	$(CC) $(CFLAGS)  matrix_print.c matrix_inverse.c
 clean:
 	rm -rf *.o
