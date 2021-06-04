@@ -61,7 +61,6 @@ void myGLWidget::paintGL()
             break;
         case 1:
             auto F = new double[nx * ny][16];
-            printf("1");
             method_1_prod(f_vals, nx, ny, x_vals, y_vals, func_id, F);
             for(int i = 0; i < x_n - 1; i++){
                 for(int j = 0; j < y_n - 1; j++){

@@ -112,7 +112,7 @@ void method_1_prod(double *fvals, int nx, int ny, double *x_vals, double *y_vals
     double *temp = new double[nx];
     double *temp_ans = new double[nx];
     double *der = new double[2];
-    printf("1");
+
     // Fx create
     for(int i = 0; i < ny; i++){
         for(int j = 0; j < nx; j++){
@@ -132,7 +132,7 @@ void method_1_prod(double *fvals, int nx, int ny, double *x_vals, double *y_vals
     temp = new double[ny];
     temp_ans = new double[ny];
     for(int i = 0; i < nx; i++){
-        for(int j = 0; i < ny; j++){
+        for(int j = 0; j < ny; j++){
             temp[j] = fvals[i + nx * j];
         }
         der[0] = calc_der_y(x_vals[i], y_vals[0], func_id);
