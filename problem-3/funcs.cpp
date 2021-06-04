@@ -146,4 +146,37 @@ double calc_der_y(double x, double y, int func_id){
     return f;
 }
 
+double calc_func(double x, double y, int func_id, double max_f, int p, double x2, double y2) {
+    double f;
+    switch (func_id) {
+        case 0:
+            f = f0(x, y);
+            break;
+        case 1:
+            f = f1(x, y);
+            break;
+        case 2:
+            f = f2(x, y);
+            break;
+        case 3:
+            f = f3(x, y);
+            break;
+        case 4:
+            f = f4(x, y);
+            break;
+        case 5:
+            f = f5(x, y);
+            break;
+        case 6:
+            f = f6(x, y);
+            break;
+        case 7:
+            f = f7(x, y);
+            break;
+    }
+    if (p != 0 && fabs(x - x2) < 1e-6 && fabs(y - y2) < 1e-6){
+        f += p * 0.1 * max_f;
+    }
+    return f;
+}
 #endif //PROBLEM_3_FUNCS_H

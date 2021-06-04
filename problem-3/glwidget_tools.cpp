@@ -5,7 +5,7 @@
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 #define MAX(a, b) ((a) < (b) ? (b) : (a))
 
-#define MAX_ACC 100000
+#define MAX_ACC 1000000
 int myGLWidget::parse_command_line(int argc, char *argv[]) {
     if (argc != 8) {
         return -1;
@@ -159,13 +159,13 @@ void myGLWidget::keyPressEvent(QKeyEvent* e){
             break;
         case Qt::Key_8:
             angle_h = angle_h + 15.0;
-            if(angle_h > 360){
+            while(angle_h > 360){
                 angle_h -= 360;
             }
             break;
         case Qt::Key_9:
             angle_h = angle_h - 15.0;
-            if(angle_h < 360){
+            while(angle_h < -360){
                 angle_h += 360;
             }
             break;

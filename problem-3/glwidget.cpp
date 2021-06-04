@@ -1,5 +1,6 @@
 #include "glwidget.h"
 #include <qpainter.h>
+#include <QTextStream>
 
 #include <stdio.h>
 #include <math.h>
@@ -23,6 +24,7 @@ void myGLWidget::initializeGL()
 
 void myGLWidget::paintGL()
 {
+    QTextStream out(stdout);
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 	setProjectionMatrix();
@@ -34,6 +36,7 @@ void myGLWidget::paintGL()
 
 	int	x_n = X_DRAW_ACC * nx, y_n = Y_DRAW_ACC * ny;
 	double x, y, z;
+	double* F = new double[nx * ny * 16];
 	glColor3d(1.0,0.0,0.0);
     switch (mode) {
         case 0:
@@ -60,8 +63,43 @@ void myGLWidget::paintGL()
             }
             break;
         case 1:
-            auto F = new double[nx * ny][16];
+            x_n = 3 * nx;
+            y_n = 3 * ny;
             method_1_prod(f_vals, nx, ny, x_vals, y_vals, func_id, F);
+            for(int i = 0; i < x_n - 1; i++){
+                for(int j = 0; j < y_n - 1; j++){
+                    glColor3d(1.0 * (x_n - i) / x_n, 1.0 * j / y_n, 0.0);
+                    x = (bx - ax) * i / (x_n - 1) + ax;
+                    y = (by - ay) * j / (y_n - 1) + ay;
+                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
+                    glVertex3d(x, y, z);
+                    x = (bx - ax) * (i + 1) / (x_n - 1) + ax;
+                    y = (by - ay) * j / (y_n - 1) + ay;
+                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
+                    glVertex3d(x, y, z);
+                    x = (bx - ax) * (i + 1) / (x_n - 1) + ax;
+                    y = (by - ay) * (j + 1) / (y_n - 1) + ay;
+                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
+                    glVertex3d(x, y, z);
+                    x = (bx - ax) * i / (x_n - 1) + ax;
+                    y = (by - ay) * (j + 1) / (y_n - 1) + ay;
+                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
+                    glVertex3d(x, y, z);
+                }
+            }
+            for(int i = 0; i < nx; i++){
+                for(int j = 0; j < ny; j++){
+                    for(int k = 0; k < 16; k++){
+                        out << F[i + nx * (j + 16 * k)] << " ";
+                    }
+                    out << endl;
+                }
+            }
+            break;
+        case 2:
+            x_n = 3 * nx;
+            y_n = 3 * ny;
+            method_2_prod(f_vals, nx, ny, x_vals, y_vals, func_id, F, ax, bx, ay, by, max_f, x_vals[nx / 2], y_vals[ny / 2], p);
             for(int i = 0; i < x_n - 1; i++){
                 for(int j = 0; j < y_n - 1; j++){
                     glColor3d(1.0 * (x_n - i) / x_n, 1.0 * j / y_n, 0.0);
@@ -99,7 +137,7 @@ void myGLWidget::paintGL()
     painter.drawText(0, 140, max_f_name);
     painter.endNativePainting();
     painter.end();
-
+    delete[] F;
 	glDisable(GL_DEPTH_TEST);
 }
 

@@ -38,4 +38,5 @@ double DxDyf7(double, double);
 
 double calc_der_x(double x, double y, int func_id);
 double calc_der_y(double x, double y, int func_id);
+double calc_func(double x, double y, int func_id, double max_f, int p, double x2, double y2);
 #endif //PROBLEM_3_FUNCS_H
