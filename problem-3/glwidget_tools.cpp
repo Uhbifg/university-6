@@ -41,15 +41,20 @@ int myGLWidget::parse_command_line(int argc, char *argv[]) {
 
 void myGLWidget::init_func(){
     max_f = 0;
-    if(!f_vals){
-        delete[] f_vals;
-        delete[] x_vals;
-        delete[] y_vals;
-    }
 
     f_vals = new double[nx * ny];
     x_vals = new double[nx];
     y_vals = new double[ny];
+    F = new double[nx * ny * 16];
+
+
+    for (int i = 0; i < nx - 1; i++) {
+        for (int j = 0; j < ny - 1; j++) {
+            for (int k = 0; k < 16; k++) {
+                F[i * 16 * ny + j * 16 + k] = 0;
+            }
+        }
+    }
     // init points
     double point = 0;
     for(int i = 0; i < nx; i++){
@@ -68,14 +73,6 @@ void myGLWidget::init_func(){
         }
     }
     max_f = set_max_f();
-    for(int i = 0; i < nx; i++){
-        point = (bx - ax) / (nx - 1) * i + ax;
-        x_vals[i] = point;
-    }
-    for(int i = 0; i < ny; i++){
-        point = (by - ay) / (ny - 1) * i + ay;
-        y_vals[i] = point;
-    }
 
     // init function values
     for(int i = 0; i < nx; i++){
@@ -83,6 +80,7 @@ void myGLWidget::init_func(){
             f_vals[i + j * nx] = calc_f(x_vals[i], y_vals[j]);
         }
     }
+    empty = 0;
     update();
 }
 
@@ -113,10 +111,12 @@ void myGLWidget::keyPressEvent(QKeyEvent* e){
             break;
         case Qt::Key_0:
             f_change = true;
+            method_changed = true;
             func_id = (func_id + 1) % 8;
             break;
         case Qt::Key_1:
             mode = (mode + 1) % 3;
+            method_changed = true;
             break;
         case Qt::Key_2:
             scale += 1;
@@ -124,6 +124,7 @@ void myGLWidget::keyPressEvent(QKeyEvent* e){
             bx = bx_args * pow(2, scale);
             ay = ay_args * pow(2, scale);
             by = by_args * pow(2, scale);
+            method_changed = true;
             break;
         case Qt::Key_3:
             scale -= 1;
@@ -131,30 +132,36 @@ void myGLWidget::keyPressEvent(QKeyEvent* e){
             bx = bx_args * pow(2, scale);
             ay = ay_args * pow(2, scale);
             by = by_args * pow(2, scale);
+            method_changed = true;
             break;
         case Qt::Key_4:
             if(4 * nx * ny < MAX_ACC){
                 f_change = true;
                 nx *= 2;
                 ny *= 2;
+                method_changed = true;
             }
             break;
         case Qt::Key_5:
             if(nx / 2 >= 5){
                 nx /= 2;
                 f_change = true;
+                method_changed = true;
             }
             if(ny / 2 >= 5){
                 ny /= 2;
                 f_change = true;
+                method_changed = true;
             }
             break;
         case Qt::Key_6:
             f_change = true;
+            method_changed = true;
             p += 1;
             break;
         case Qt::Key_7:
             f_change = true;
+            method_changed = true;
             p -= 1;
             break;
         case Qt::Key_8:

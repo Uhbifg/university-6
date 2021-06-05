@@ -36,12 +36,12 @@ void myGLWidget::paintGL()
 
 	int	x_n = X_DRAW_ACC * nx, y_n = Y_DRAW_ACC * ny;
 	double x, y, z;
-	double* F = new double[nx * ny * 16];
+
 	glColor3d(1.0,0.0,0.0);
     switch (mode) {
         case 0:
-            for(int i = 0; i < x_n - 1; i++){
-                for(int j = 0; j < y_n - 1; j++){
+            for (int i = 0; i < x_n - 1; i++) {
+                for (int j = 0; j < y_n - 1; j++) {
                     glColor3d(1.0 * (x_n - i) / x_n, 1.0 * j / y_n, 0.0);
                     x = (bx - ax) * i / (x_n - 1) + ax;
                     y = (by - ay) * j / (y_n - 1) + ay;
@@ -62,46 +62,17 @@ void myGLWidget::paintGL()
                 }
             }
             break;
-        case 1:
-            x_n = 3 * nx;
-            y_n = 3 * ny;
-            method_1_prod(f_vals, nx, ny, x_vals, y_vals, func_id, F);
-            for(int i = 0; i < x_n - 1; i++){
-                for(int j = 0; j < y_n - 1; j++){
-                    glColor3d(1.0 * (x_n - i) / x_n, 1.0 * j / y_n, 0.0);
-                    x = (bx - ax) * i / (x_n - 1) + ax;
-                    y = (by - ay) * j / (y_n - 1) + ay;
-                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
-                    glVertex3d(x, y, z);
-                    x = (bx - ax) * (i + 1) / (x_n - 1) + ax;
-                    y = (by - ay) * j / (y_n - 1) + ay;
-                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
-                    glVertex3d(x, y, z);
-                    x = (bx - ax) * (i + 1) / (x_n - 1) + ax;
-                    y = (by - ay) * (j + 1) / (y_n - 1) + ay;
-                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
-                    glVertex3d(x, y, z);
-                    x = (bx - ax) * i / (x_n - 1) + ax;
-                    y = (by - ay) * (j + 1) / (y_n - 1) + ay;
-                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
-                    glVertex3d(x, y, z);
-                }
+        case 1:{
+            x_n = 4 * nx;
+            y_n = 4 * ny;
+            if(method_changed){
+                method_1_prod(f_vals, nx, ny, x_vals, y_vals, func_id, F);
+                method_changed = false;
             }
-            for(int i = 0; i < nx; i++){
-                for(int j = 0; j < ny; j++){
-                    for(int k = 0; k < 16; k++){
-                        out << F[i + nx * (j + 16 * k)] << " ";
-                    }
-                    out << endl;
-                }
-            }
-            break;
-        case 2:
-            x_n = 3 * nx;
-            y_n = 3 * ny;
-            method_2_prod(f_vals, nx, ny, x_vals, y_vals, func_id, F, ax, bx, ay, by, max_f, x_vals[nx / 2], y_vals[ny / 2], p);
-            for(int i = 0; i < x_n - 1; i++){
-                for(int j = 0; j < y_n - 1; j++){
+            for (int i = 0; i < x_n - 1; i++) {
+                for (int j = 0; j < y_n - 1; j++) {
+                    double cur_i = i / nx;
+                    double cur_j = j / ny;
                     glColor3d(1.0 * (x_n - i) / x_n, 1.0 * j / y_n, 0.0);
                     x = (bx - ax) * i / (x_n - 1) + ax;
                     y = (by - ay) * j / (y_n - 1) + ay;
@@ -123,6 +94,38 @@ void myGLWidget::paintGL()
             }
             break;
     }
+        case 2: {
+            x_n = 4 * nx;
+            y_n = 4 * ny;
+            if(method_changed){
+                method_2_prod(f_vals, nx, ny, x_vals, y_vals, func_id, F, ax, bx, ay, by, max_f, x_vals[nx / 2],
+                              y_vals[ny / 2], p);
+                method_changed = false;
+            }
+            for (int i = 0; i < x_n - 1; i++) {
+                for (int j = 0; j < y_n - 1; j++) {
+                    glColor3d(1.0 * (x_n - i) / x_n, 1.0 * j / y_n, 0.0);
+                    x = (bx - ax) * i / (x_n - 1) + ax;
+                    y = (by - ay) * j / (y_n - 1) + ay;
+                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
+                    glVertex3d(x, y, z);
+                    x = (bx - ax) * (i + 1) / (x_n - 1) + ax;
+                    y = (by - ay) * j / (y_n - 1) + ay;
+                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
+                    glVertex3d(x, y, z);
+                    x = (bx - ax) * (i + 1) / (x_n - 1) + ax;
+                    y = (by - ay) * (j + 1) / (y_n - 1) + ay;
+                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
+                    glVertex3d(x, y, z);
+                    x = (bx - ax) * i / (x_n - 1) + ax;
+                    y = (by - ay) * (j + 1) / (y_n - 1) + ay;
+                    z = method_compute(x, y, x_vals, y_vals, nx, ny, F);
+                    glVertex3d(x, y, z);
+                }
+            }
+            break;
+        }
+    }
 
 	glEnd();
 
@@ -137,7 +140,7 @@ void myGLWidget::paintGL()
     painter.drawText(0, 140, max_f_name);
     painter.endNativePainting();
     painter.end();
-    delete[] F;
+
 	glDisable(GL_DEPTH_TEST);
 }
 

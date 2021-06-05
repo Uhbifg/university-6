@@ -114,7 +114,36 @@ double calc_der_x(double x, double y, int func_id){
     return f;
 }
 
-
+double calc_der_xy(double x, double y, int func_id){
+    double f = 0;
+    switch (func_id) {
+        case 0:
+            f = DxDyf0(x, y);
+            break;
+        case 1:
+            f = DxDyf1(x, y);
+            break;
+        case 2:
+            f = DxDyf2(x, y);
+            break;
+        case 3:
+            f = DxDyf3(x, y);
+            break;
+        case 4:
+            f = DxDyf4(x, y);
+            break;
+        case 5:
+            f = DxDyf5(x, y);
+            break;
+        case 6:
+            f = DxDyf6(x, y);
+            break;
+        case 7:
+            f = DxDyf7(x, y);
+            break;
+    }
+    return f;
+}
 double calc_der_y(double x, double y, int func_id){
     double f = 0;
     switch (func_id) {

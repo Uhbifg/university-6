@@ -43,6 +43,9 @@ protected:
     double *f_vals;
     double *x_vals;
     double *y_vals;
+    double *F;
+    bool method_changed = true;
+    int empty = 1;
 };
 
 #endif
